@@ -5,7 +5,7 @@
 
 using namespace std;
 
-void lexer(char** tokens) {
+void lexer(char** tokens, int noOfTokens, int line) {
 	// executes commands
 	// throws errors
 
@@ -15,39 +15,39 @@ void lexer(char** tokens) {
 	cout << "First token detected:" << endl;
 
 	if (!strcmp(firstToken, "CREATE")) {
-		cout << "CREATE";
+		//cout << "CREATE";
 
 		return;
 	}
 	if (!strcmp(firstToken, "DROP")) {
-		cout << "DROP";
+		//cout << "DROP";
 
 		return;
 	}
 	if (!strcmp(firstToken, "DISPLAY")) {
-		cout << "DISPLAY";
+		//cout << "DISPLAY";
 
 		return;
 	}
 	if (!strcmp(firstToken, "INSERT")) {
-		cout << "INSERT";
+		//cout << "INSERT";
 
 		return;
 	}
 	if (!strcmp(firstToken, "SELECT")) {
-		cout << "SELECT";
+		//cout << "SELECT";
 
 		return;
 	}
 	if (!strcmp(firstToken, "DELETE")) {
-		cout << "DELETE";
+		//cout << "DELETE";
 
 		return;
 	}
 	if (!strcmp(firstToken, "UPDATE")) {
-		cout << "UPDATE";
+		//cout << "UPDATE";
 
 		return;
 	}
-
+	cout << "Syntax error: Unrecognized command at line " << line << endl;
 }

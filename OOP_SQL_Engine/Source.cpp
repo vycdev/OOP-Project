@@ -65,52 +65,35 @@ class DATABASE;
 // UPDATE studenti SET nume = “Alice” WHERE id = 1
 // UPDATE studenti SET nume = “Alice” WHERE nume= “Bianca”
 
+void tokenizer(string input, string delimiter, int& currentToken, string* tokens) {
+	int pos = 0;
+
+	currentToken = 0;
+	while ((pos = input.find(delimiter)) != string::npos) {
+		tokens[currentToken] = input.substr(0, pos);
+		input.erase(0, pos + delimiter.length());
+		currentToken++;
+	}
+	tokens[currentToken] = input.substr(0, pos);
+	currentToken++;
+
+}
+
 int main()
 { 
 	string input;
-	char* tokens[100];
-	char* inputChar = new char[100];
-	
 	getline(cin, input);
-	strcpy_s(inputChar, input.length() + 1, input.c_str());
+	
+	int noOfTokens;
+	string tokens[100];
+	tokenizer(input, " ", noOfTokens, tokens);
 
-
-	int currentToken = 0;
-	char* token;
-	token = strtok_s(inputChar, " ", &inputChar);
-
-	while(token!=NULL){
-		tokens[currentToken] = new char[strlen(token) + 1];
-		strcpy_s(tokens[currentToken],strlen(token)+1, token);
-		currentToken++; 
-		token = strtok_s(NULL, " ", &inputChar);
-	}
 	cout << "TOKENS VECTOR:" << endl;
-	for(int i = 0; i<currentToken; i++)
+	for (int i = 0; i < noOfTokens; i++)
 		cout << tokens[i] << endl;
 	
-
-	lexer(tokens);
-
-	/*
-	token1 token2 toekn3 <- INPUT
-	token1
-	token2
-	toekn3
-	*/
-
-	//1.	CREATE TABLE table_name [IF NOT EXISTS] 
-	//					(
-	//						(column_1_name,type,default_value), (column_2_name,type,default_value), …
-	//					) - the command should receive at least 1 column
-
-	// EXEMPLE
-	// 
-	//CREATE TABLE students ((id, integer, 1000, 0), (nume, text, 128, ’’), (grupa, text,50,’1000’))
-
-	//CREATE TABLE students IF NOT EXISTS((id, integer, 1000, 0), (nume, text, 128, ’’), (grupa, text, 50, ’1000’))
-
-	//cout << inputChar;
+	cout << "__END__ ";
+	//lexer(tokens, noOfTokens, 0);
 
 	//-i "fisier.txt",
 	//-c ASDFASDF
