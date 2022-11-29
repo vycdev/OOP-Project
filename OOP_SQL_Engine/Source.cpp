@@ -1,24 +1,20 @@
 #include <iostream>
 #include <string>
-#pragma warning(disable : 4996)
+
+#include "./parsing.h"
+
 using namespace std;
 
-class SQL
-{
-private:
-
+class COLUMN {
+private: 
+	string name;
+	string type; // text, integer, float
+	int size;
+	char* data; // we will store everything as a char array and convert them later if required 
 public:
-	SQL()
-	{
-	}
 
-	~SQL()
-	{
-	}
 
 };
-
-class COLUMN; 
 	// atributes (name, type, data array)
 	//
 	// method for deleting data at index
@@ -50,52 +46,24 @@ class DATABASE;
 	// method for dropping tables
 	// ... 
 
-void lexer(char** tokens) {
-	// executes commands
-	// throws errors
-
-	char* firstToken = new char[strlen(tokens[0]) + 1];
-		
-	strcpy(firstToken, tokens[0]);
-	cout << "First token detected:" << endl;
-
-	if (!strcmp(firstToken, "CREATE")){
-		cout << "CREATE";
-
-		return;
-	}
-	if (!strcmp(firstToken, "DROP")) {
-		cout << "DROP";
-
-		return;
-	}
-	if (!strcmp(firstToken, "DISPLAY")) {
-		cout << "DISPLAY";
-
-		return;
-	}
-	if (!strcmp(firstToken, "INSERT")) {
-		cout << "INSERT";
-
-		return;
-	}
-	if (!strcmp(firstToken, "SELECT")) {
-		cout << "SELECT";
-
-		return;
-	}
-	if (!strcmp(firstToken, "DELETE")) {
-		cout << "DELETE";
-
-		return;
-	}
-	if (!strcmp(firstToken, "UPDATE")) {
-		cout << "UPDATE";
-
-		return;
-	}
-
-}
+// CREATE TABLE students ((id, integer, 1000, 0), (nume, text, 128, ’’), (grupa, text,50,’1000’))
+//
+// DROP TABLE studenti
+// 
+// DISPLAY TABLE studenti 
+// // (this displays the table details not the contents of the table)
+// 
+// INSERT INTO studenti VALUES (1,”John”,”1001”)
+// 
+// SELECT (nume) FROM studenti WHERE id = 1 
+// SELECT (id,nume,grupa)  FROM  studenti
+// SELECT ALL FROM studenti WHERE id = 1
+// SELECT ALL FROM studenti
+// 
+// DELETE FROM studenti WHERE nume = “John”
+// 
+// UPDATE studenti SET nume = “Alice” WHERE id = 1
+// UPDATE studenti SET nume = “Alice” WHERE nume= “Bianca”
 
 int main()
 { 
@@ -104,18 +72,18 @@ int main()
 	char* inputChar = new char[100];
 	
 	getline(cin, input);
-	strcpy(inputChar, input.c_str());
+	strcpy_s(inputChar, input.length() + 1, input.c_str());
 
 
 	int currentToken = 0;
 	char* token;
-	token = strtok(inputChar, " ");
+	token = strtok_s(inputChar, " ", &inputChar);
 
 	while(token!=NULL){
 		tokens[currentToken] = new char[strlen(token) + 1];
-		strcpy(tokens[currentToken], token);
+		strcpy_s(tokens[currentToken],strlen(token)+1, token);
 		currentToken++; 
-		token = strtok(NULL, " ");
+		token = strtok_s(NULL, " ", &inputChar);
 	}
 	cout << "TOKENS VECTOR:" << endl;
 	for(int i = 0; i<currentToken; i++)
