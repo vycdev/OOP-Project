@@ -5,14 +5,12 @@
 
 using namespace std;
 
-enum columnTypes {text, integer, floatingPoint};
+enum columnTypes { text, integer, floatingPoint };
 
 class Column {
-private: 
+private:
 	int size; // this would be useful if we used char arrays intead of string arrays for the rows, we'll see 
-	
 	string defaultValue; // honestly dont know why we need this since it's not used anywhere
-	
 	string* rows; // dynamically allocated
 	int noOfRows; // variable to keep count of the number of rows
 public:
@@ -20,7 +18,50 @@ public:
 	const columnTypes type;
 
 	// constructors
-	//
+	Column() :name(""), type(text)
+	{
+		this->size = 0;
+		this->defaultValue = "";
+		this->rows = nullptr;
+		this->noOfRows = 0;
+	}
+
+	Column(const  string newName, const columnTypes newType, string defaultValue) :name(newName), type(newType)
+	{
+		this->defaultValue = defaultValue;
+		this->noOfRows = 1;
+		this->rows = new string[noOfRows];
+		this->rows[0] = this->defaultValue;
+	}	
+	
+	Column(const  string newName, const columnTypes newType, string defaultValue, string data) :name(newName), type(newType)
+	{
+		this->defaultValue = defaultValue;
+		this->noOfRows = 1;
+		this->rows = new string[noOfRows];
+		this->rows[0] = data;
+	}
+
+	Column(const  string newName, const columnTypes newType, string defaultValue, int noOfRows) :name(newName), type(newType)
+	{
+		this->defaultValue = defaultValue;
+		this->noOfRows = noOfRows;
+		this->rows = new string[noOfRows];
+		for (int i = 0;i < this->noOfRows;i++)
+		{
+			this->rows[i] = this->defaultValue;
+		}
+	}
+
+	void printRows()
+	{
+		for (int i = 0;i < this->noOfRows;i++)
+		{
+			cout << this->rows[i] << endl;
+			
+		} 
+	}
+
 	// method for deleting data at index
 	//		- takes an index as a parameter
 	//		- create a temporary array rows with size noOfRows - 1
@@ -30,7 +71,29 @@ public:
 	//		- realocate rows with noOfRows
 	//		- deep copy the temporary array into rows
 	//		- dealocate the temporary array	
-	// 
+	void deleteData(int index)
+	{
+		this->noOfRows--;
+		string* newRows = new string[this->noOfRows];
+		int j = 0;
+		for (int i = 0;i < this->noOfRows+1;i++)
+		{
+			if (i != index)
+			{
+			newRows[j++] = this->rows[i];
+			}
+		}
+		delete[] this->rows;
+		this->rows = new string[this->noOfRows];
+		for (int i = 0;i < this->noOfRows;i++)
+		{
+			this->rows[i] = newRows[i];
+		}
+		delete[] newRows;
+	}
+
+
+
 	// method for adding data
 	//		- takes a string value as a parameter
 	//		- we increase noOfRows by 1
@@ -40,11 +103,34 @@ public:
 	//		- we realocate rows with the size of now noOfRows
 	//		- we deep copy the previously copied rows into the now realocated rows
 	//		- we dealocate the copy of rows
-	//		
+	void addData(string data)
+	{
+		this->noOfRows++;
+		string* newRows = new string[this->noOfRows];
+		for (int i = 0;i < this->noOfRows-1;i++)
+		{
+			newRows[i] = this->rows[i];
+		}
+		newRows[this->noOfRows - 1] = data;
+		delete[] this->rows;
+		this->rows = new string[this->noOfRows];
+		for (int i = 0;i < this->noOfRows;i++)
+		{
+			this->rows[i] = newRows[i];
+		}
+		delete[] newRows;
+	}
+
 	// method for updating at index
 	//		- takes an index and a value
 	//		- updates rows[index] = value
-	// 
+	void updateData(int index, string data)
+	{
+		this->rows[index] = data;
+	}
+
+
+
 	// method for getting indexes of data given a value
 	//		- takes a value (could look something like this get(string value)
 	//		- we then return a vector of booleans, or we can use ints doesn't matter that much
@@ -52,17 +138,58 @@ public:
 	//		- the size is noOfRows
 	//		- 0 means that the parameter value isn't equal to the value of the row at that index, row[i] != value
 	//		- 1 means that the parameter value is equal to the value of the row at that index, row[i] == value
-	//		
+	bool* getDuplicates(string value)
+	{
+		bool* duplicates = new bool[this->noOfRows];
+		for (int i = 0;i < this->noOfRows;i++)
+		{
+			if (this->rows[i] == value)
+			{
+				duplicates[i] = 1;
+			}
+			else
+			{
+				duplicates[i] = 0;
+			}
+		} 
+		return duplicates;
+	}
+
+
 	// method for getting data at index
 	//		- takes an index
 	//		- returns the value at that index
 	//		- could use operator overloading with the [] operator (so we have that as well in the project)
-	// 
+	string operator[](int index)
+	{
+		for (int i = 0;i < this->noOfRows;i++)
+		{
+			if (i == index)
+			{
+				return this->rows[i];
+			}
+		}  return "";
+	}
+
+
 	// method for getting the noOfRows
 	//		- simply returns the noOfRows
-	// 
+	int getNoOfRows()
+	{
+		return this->noOfRows;
+	}
+
+
 	// dealocator
 	//		- dealocates rows
+	~Column()
+	{
+		if (this->rows != nullptr)
+		{
+			delete[] this->rows;
+		}
+	}
+
 };
 
 class Table {
@@ -201,7 +328,18 @@ void tokenizer(string input, string delimiter, int& currentToken, string* tokens
 
 int main()
 { 
-	string input;
+	Column col ("Varsta", integer, "18");
+	col.addData("17");
+	col.addData("19");
+	col.addData("69");
+	col.updateData(1, "69");
+	col.getDuplicates("69");
+
+
+
+	return 0;
+
+	/*string input;
 	getline(cin, input);
 	
 	int noOfTokens;
@@ -212,7 +350,7 @@ int main()
 	for (int i = 0; i < noOfTokens; i++)
 		cout << tokens[i] << endl;
 	
-	cout << "__END__ ";
+	cout << "__END__ ";*/
 	//lexer(tokens, noOfTokens, 0);
 
 	//-i "fisier.txt",
