@@ -26,15 +26,14 @@ public:
 		this->noOfRows = 0;
 	}
 
-	Column(const  string newName, const columnTypes newType, string defaultValue) :name(newName), type(newType)
+	Column(const string newName, const columnTypes newType, string defaultValue) :name(newName), type(newType)
 	{
 		this->defaultValue = defaultValue;
-		this->noOfRows = 1;
-		this->rows = new string[noOfRows];
-		this->rows[0] = this->defaultValue;
+		this->noOfRows = 0;
+		this->rows = nullptr;
 	}	
 	
-	Column(const  string newName, const columnTypes newType, string defaultValue, string data) :name(newName), type(newType)
+	Column(const string newName, const columnTypes newType, string defaultValue, string data) :name(newName), type(newType)
 	{
 		this->defaultValue = defaultValue;
 		this->noOfRows = 1;
@@ -42,7 +41,7 @@ public:
 		this->rows[0] = data;
 	}
 
-	Column(const  string newName, const columnTypes newType, string defaultValue, int noOfRows) :name(newName), type(newType)
+	Column(const string newName, const columnTypes newType, string defaultValue, int noOfRows) :name(newName), type(newType)
 	{
 		this->defaultValue = defaultValue;
 		this->noOfRows = noOfRows;
@@ -138,7 +137,7 @@ public:
 	//		- the size is noOfRows
 	//		- 0 means that the parameter value isn't equal to the value of the row at that index, row[i] != value
 	//		- 1 means that the parameter value is equal to the value of the row at that index, row[i] == value
-	bool* getDuplicates(string value)
+	bool* getInstances(string value)
 	{
 		bool* duplicates = new bool[this->noOfRows];
 		for (int i = 0;i < this->noOfRows;i++)
@@ -162,13 +161,9 @@ public:
 	//		- could use operator overloading with the [] operator (so we have that as well in the project)
 	string operator[](int index)
 	{
-		for (int i = 0;i < this->noOfRows;i++)
-		{
-			if (i == index)
-			{
-				return this->rows[i];
-			}
-		}  return "";
+		if (index < 0 || index >= noOfRows)
+			throw exception("Index out of bounds.");
+		else return rows[index];
 	}
 
 
@@ -333,8 +328,13 @@ int main()
 	col.addData("19");
 	col.addData("69");
 	col.updateData(1, "69");
-	col.getDuplicates("69");
 
+	//cout << col[10]; // Exception throwing works as intended 
+	//col.getDuplicates("69");
+
+	col.deleteData(2);
+
+	col.printRows();
 
 
 	return 0;
