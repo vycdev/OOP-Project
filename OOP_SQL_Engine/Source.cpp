@@ -166,6 +166,16 @@ public:
 		else return rows[index];
 	}
 
+	Column& operator=(const Column& col)
+	{
+		this->noOfRows = col.noOfRows;
+		for (int i = 0; i < noOfRows; i++)
+		{
+			this->rows[i] = col.rows[i];
+		}
+		return *this;
+	}
+
 
 	// method for getting the noOfRows
 	//		- simply returns the noOfRows
@@ -184,28 +194,88 @@ public:
 			delete[] this->rows;
 		}
 	}
-
+	friend ostream& operator<<(ostream& os, Column col);
 };
+ostream& operator<<(ostream& os, Column col)
+{
+	for (int i = 0; i < col.noOfRows; i++)
+	{
+		os << col.rows[i] << endl;
+	}
+	return os;
+}
 
 class Table {
 private: 
 	Column* columns; // dynamically allocated
 	int noOfColumns; // number to keep count of the number of columns in the database
-public: 
 	const string name;
+public: 
+
 	// constructors
-	// 
-	// method for dropping index (still cant tell what indexes are in sql we we're going to put this off temporarily at least)
-	// method for adding index 
-	// 
-	// method for dropping column (delete the whole column) (**Since we dont have a DROP COLUMN command this is completely optional**)
-	//		- takes as a parameter the column name
-	//		- if it finds the column it dealocates it
-	//		- you will need to do kinda the same thing as the deleting data at index method from the column class except here you search for the index yourself given the column name 
-	// 
- 	// method for adding columns 
+	Table(const string name, int noOfColumns, Column *columns) : name(name)
+	{
+		this->noOfColumns = noOfColumns;
+		this->columns = new Column[noOfColumns];
+		for (int i = 0; i < noOfColumns; i++)
+		{
+			this->columns[i] = columns[i];
+		}
+	}
+
+// method for showing values
+//		- takes as parameters a string* columnNames, a string columnName, a string conditionValue
+//		- use the find indexes method from the column class to find the indexes that satisfie the condition 
+//		- display all of the columns are given in columnNames at the indexes that you got
+	void printColumns()
+	{
+		for (int i = 0; i < noOfColumns; i++)
+		{
+			cout << columns[i] << endl;   // THIS IS NOT WORKING 
+		}
+	}
+
+	// method for adding columns 
 	//		- takes a column name, a type, a size, and a default value
 	//		- basically the same as the adding data method in the column class
+	void addColumns(Column col)
+	{
+		this->noOfColumns++;
+		Column* newColumns = new Column[this->noOfColumns];
+		for (int i = 0; i < this->noOfColumns - 1; i++)
+		{
+			newColumns[i] = this->columns[i];
+		}
+		newColumns[this->noOfColumns - 1] = col;
+		delete[] this->columns;
+		this->columns = new Column[this->noOfColumns];
+		for (int i = 0; i < this->noOfColumns; i++)
+		{
+			this->columns[i] = newColumns[i];
+		}
+		delete[] newColumns;
+	}
+
+// method for dropping column (delete the whole column) (**Since we dont have a DROP COLUMN command this is completely optional**)
+//		- takes as a parameter the column name
+//		- if it finds the column it dealocates it
+//		- you will need to do kinda the same thing as the deleting data at index method from the column class except here you search for the index yourself given the column name 
+
+	void dropColumns(Column col)
+	{
+
+	}
+
+// dealocator
+//		- deletes all columns
+	~Table()
+	{
+		delete[] this->columns;
+		this->columns = nullptr;
+	}
+	
+	// method for dropping index (still cant tell what indexes are in sql we we're going to put this off temporarily at least)
+	// method for adding index 
 	// 
 	// method for adding data (it will call the method of adding data for each Column class allocated in the table)
 	//		- needs to take as parameter an array of strings (string* values)
@@ -241,14 +311,6 @@ public:
 	//		- use the method for the updating data at index from this class (the table class not the column class) using the indexes that you got 
 	//		- sommething like if(indexes[i] == 1) this->updateRowAtIndex(rowName, i, value) or something similar 
 	// 
-	// method for showing values
-	//		- takes as parameters a string* columnNames, a string columnName, a string conditionValue
-	//		- use the find indexes method from the column class to find the indexes that satisfie the condition 
-	//		- display all of the columns are given in columnNames at the indexes that you got
-	// 
-	// 
-	// dealocator
-	//		- deletes all columns
 };
 	
 class Database {
@@ -336,8 +398,9 @@ int main()
 
 	col.printRows();
 
-
-	return 0;
+	Column* colVector = new Column[2];
+	Table tab("Studenti", 2, colVector);
+	tab.printColumns();
 
 	/*string input;
 	getline(cin, input);
