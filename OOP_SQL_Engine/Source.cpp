@@ -373,33 +373,37 @@ public:
 
 	// method for creating a new table
 	//		- check if that table exists
-	void CreateTable(Table* table, string defaultValue, int noOfRows)
+	void CreateTable(Table table, string defaultValue, int noOfRows)
 	{
-		if (table != nullptr)
+		this->noOfTables++;
+		Table* tableCpy;
+		tableCpy = new Table[noOfTables];
+		for (int i = 0; i < noOfTables - 1; i++)
 		{
-			Table* tableCpy;
-			tableCpy = new Table[noOfTables + 1];
-			for (int i = 0; i < noOfTables; i++)
-			{
-				tableCpy[i] = table[i];
-			}
+			tableCpy[i] = this->tables[i];
 		}
+		tableCpy[this->noOfTables] = table;
+		delete[] this->tables;
+		this->tables = new Table[this->noOfTables];
+		for (int i = 0; i < noOfTables; i++)
+		{
+			this->tables[i] = tableCpy[i];
+		}
+		delete[] tableCpy;
 	}
 
 	// method for dropping a table
 	//  
 	void DeleteTable(Table table)
 	{
-		int cnt = 0;
 		for (int i; i < noOfTables; i++)
 		{
-			if (tables[i] == table[i])
+			if (tables[i] == table)
 			{
 				delete[] tables[i];
-				cnt++;
 			}
 		}
-		this->noOfTables = noOfTables - cnt;
+		this->noOfTables--;
 	}
 
 
@@ -411,7 +415,7 @@ public:
 	{
 		for (int i = 0; i < noOfTables; i++)
 		{
-			if (tableName == name[i])
+			if (tableName == Table.name[i])
 			{
 				for (int j = 0; j < Table.noOfColumns; j++)
 				{
@@ -431,7 +435,7 @@ public:
 	{
 		for (int i = 0; i < noOfTables; i++)
 		{
-			if (tableName == name[i])
+			//if (tableName == name[i])
 			{
 				//insert values
 			}
