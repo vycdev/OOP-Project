@@ -7,43 +7,57 @@ using namespace std;
 
 enum columnTypes { text, integer, floatingPoint };
 
+string enumToString(columnTypes t) {
+	switch (t)
+	{
+	case text:
+		return "text";
+		break;
+	case integer:
+		return "integer";
+		break;
+	case floatingPoint:
+		return "float";
+		break;
+	default:
+		return "unknown";
+		break;
+	}
+}
+
 class Column {
 private:
 	int size; // this would be useful if we used char arrays intead of string arrays for the rows, we'll see 
-	string defaultValue; // honestly dont know why we need this since it's not used anywhere
 	string* rows; // dynamically allocated
 	int noOfRows; // variable to keep count of the number of rows
 public:
+	const string defaultValue; // honestly dont know why we need this since it's not used anywhere
 	const string name;
 	const columnTypes type;
 
 	// constructors
-	Column() :name(""), type(text)
+	Column() :name(""), type(text), defaultValue("")
 	{
 		this->size = 0;
-		this->defaultValue = "";
 		this->rows = nullptr;
 		this->noOfRows = 0;
 	}
 
-	Column(const string newName, const columnTypes newType, string defaultValue) :name(newName), type(newType)
+	Column(const string newName, const columnTypes newType, string defaultValue) :name(newName), type(newType), defaultValue(defaultValue)
 	{
-		this->defaultValue = defaultValue;
 		this->noOfRows = 0;
 		this->rows = nullptr;
 	}	
 	
-	Column(const string newName, const columnTypes newType, string defaultValue, string data) :name(newName), type(newType)
+	Column(const string newName, const columnTypes newType, string defaultValue, string data) :name(newName), type(newType), defaultValue(defaultValue)
 	{
-		this->defaultValue = defaultValue;
 		this->noOfRows = 1;
 		this->rows = new string[noOfRows];
 		this->rows[0] = data;
 	}
 
-	Column(const string newName, const columnTypes newType, string defaultValue, int noOfRows) :name(newName), type(newType)
+	Column(const string newName, const columnTypes newType, string defaultValue, int noOfRows) :name(newName), type(newType), defaultValue(defaultValue)
 	{
-		this->defaultValue = defaultValue;
 		this->noOfRows = noOfRows;
 		this->rows = new string[noOfRows];
 		for (int i = 0;i < this->noOfRows;i++)
@@ -53,14 +67,20 @@ public:
 	}
 
 	//copy constructor
-	Column(const Column& col) :name(col.name), type(col.type)
+	Column(Column& col) :name(col.name), type(col.type), defaultValue(col.defaultValue)
 	{
-		this->defaultValue = col.defaultValue;
-		this->noOfRows = col.noOfRows;
-		this->rows = new string[noOfRows];
-		for (int i = 0; i < this->noOfRows; i++)
-		{
-			this->rows[i] = this->defaultValue;
+		if (col.getNoOfRows() > 0) {
+			this->noOfRows = col.getNoOfRows();
+			this->rows = new string[noOfRows];
+			for (int i = 0; i < noOfRows; i++)
+			{
+				this->rows[i] = col[i];
+			}
+		}
+		else {
+			this->size = 0;
+			this->rows = nullptr;
+			this->noOfRows = 0;
 		}
 	}
 
@@ -149,12 +169,12 @@ public:
 	//		- the size is noOfRows
 	//		- 0 means that the parameter value isn't equal to the value of the row at that index, row[i] != value
 	//		- 1 means that the parameter value is equal to the value of the row at that index, row[i] == value
-	bool* getInstances(string value)
+	bool* getInstances(string value, bool matchAll = false)
 	{
 		bool* duplicates = new bool[this->noOfRows];
 		for (int i = 0;i < this->noOfRows;i++)
 		{
-			if (this->rows[i] == value)
+			if (this->rows[i] == value || matchAll)
 			{
 				duplicates[i] = 1;
 			}
@@ -178,12 +198,20 @@ public:
 		else return rows[index];
 	}
 
-	Column& operator=(const Column& col)
+	Column& operator=(Column& col)
 	{
-		this->noOfRows = col.noOfRows;
-		for (int i = 0; i < noOfRows+1; i++)
-		{
-			this->rows[i] = col.rows[i];
+		if (col.getNoOfRows() > 0) {
+			this->noOfRows = col.getNoOfRows();
+			this->rows = new string[noOfRows];
+			for (int i = 0; i < noOfRows; i++)
+			{
+				this->rows[i] = col[i];
+			}
+		}
+		else {
+			this->size = 0;
+			this->rows = nullptr;
+			this->noOfRows = 0;
 		}
 		return *this;
 	}
@@ -208,18 +236,21 @@ public:
 	}
 	friend ostream& operator<<(ostream& os, Column col);
 };
+
 ostream& operator<<(ostream& os, Column col)
 {
-	for (int i = 0; i < col.noOfRows; i++)
+
+	os << col.name << ":" << enumToString(col.type) << endl;
+	for (int i = 0; i < col.getNoOfRows(); i++)
 	{
-		os << col.rows[i] << endl;
+		os << col[i] << endl;
 	}
 	return os;
 }
 
 class Table {
 private: 
-	Column* columns; // dynamically allocated
+	Column** columns; // dynamically allocated
 	int noOfColumns; // number to keep count of the number of columns in the database
 	const string name;
 public: 
@@ -231,45 +262,46 @@ public:
 		noOfColumns = 0;
 	}
 
-	Table(const string name, int noOfColumns, Column *columns) : name(name)
+	Table(const string name, Column column) : name(name) // initialise the table with 1 column
 	{
-		this->noOfColumns = noOfColumns;
-		this->columns = new Column[noOfColumns];
-		for (int i = 0; i < noOfColumns; i++)
-		{
-			this->columns[i] = columns[i];
-		}
+		this->noOfColumns = 1;
+		this->columns = new Column*[1];
+		this->columns[0] = new Column(column); // U gotta assign it like this since its dynamically allocated and stuff 
 	}
+	
 
-// method for showing values
-//		- takes as parameters a string* columnNames, a string columnName, a string conditionValue
-//		- use the find indexes method from the column class to find the indexes that satisfie the condition 
-//		- display all of the columns are given in columnNames at the indexes that you got
+	// method for showing values
+	//		- takes as parameters a string* columnNames, a string columnName, a string conditionValue
+	//		- use the find indexes method from the column class to find the indexes that satisfie the condition 
+	//		- display all of the columns are given in columnNames at the indexes that you got
 	void printColumns()
 	{
 		for (int i = 0; i < noOfColumns; i++)
 		{
-			cout << columns[i] << endl;
+			cout << *columns[i] << endl;
 		}
 	}
 
 	// method for adding columns 
 	//		- takes a column name, a type, a size, and a default value
 	//		- basically the same as the adding data method in the column class
-	void addColumns(Column col)
+	void addColumn(Column& col)
 	{
-		this->noOfColumns++;
-		Column* newColumns = new Column[this->noOfColumns];
-		for (int i = 0; i < this->noOfColumns - 1; i++)
+		Column** newColumns = new Column*[noOfColumns + 1];
+		for (int i = 0; i < noOfColumns; i++)
 		{
-			newColumns[i] = this->columns[i];
+			newColumns[i] = new Column(*columns[i]);
 		}
-		newColumns[this->noOfColumns - 1] = col;
-		delete[] this->columns;
-		this->columns = new Column[this->noOfColumns];
-		for (int i = 0; i < this->noOfColumns; i++)
+
+		newColumns[noOfColumns] = new Column(col);
+		noOfColumns++;
+
+		delete[] columns;
+		columns = new Column*[noOfColumns];
+
+		for (int i = 0; i < noOfColumns; i++)
 		{
-			this->columns[i] = newColumns[i];
+			columns[i] = new Column(*newColumns[i]);
 		}
 		delete[] newColumns;
 	}
@@ -279,7 +311,7 @@ public:
 //		- if it finds the column it dealocates it
 //		- you will need to do kinda the same thing as the deleting data at index method from the column class except here you search for the index yourself given the column name 
 
-	void dropColumns(int index)
+	/*void dropColumns(int index)
 	{
 		this->noOfColumns--;
 		Column* newColumns = new Column[this->noOfColumns];
@@ -298,14 +330,15 @@ public:
 			this->columns[i] = newColumns[i];
 		}
 		delete[] newColumns;
-	}
+	}*/
 
 // dealocator
 //		- deletes all columns
 	~Table()
 	{
-		delete[] this->columns;
-		this->columns = nullptr;
+		if (columns != nullptr) {
+			delete[] columns;
+		}
 	}
 	
 	// method for dropping index (still cant tell what indexes are in sql we we're going to put this off temporarily at least)
@@ -499,19 +532,90 @@ int main()
 	col.addData("17");
 	col.addData("19");
 	col.addData("69");
-	col.updateData(1, "69");
 
 	//cout << col[10]; // Exception throwing works as intended 
 	//col.getDuplicates("69");
 
-	col.deleteData(2);
+	//col.printRows();
 
-	col.printRows();
+	Column** colVector = new Column*[2];
 
-	Column* colVector = new Column[2];
-	Table tab("Studenti", 2, colVector);
-	tab.addColumns(col);
-	tab.printColumns();
+	colVector[0] = new Column("Id", integer, "0");
+	colVector[0]->addData("2");
+	colVector[0]->addData("0");
+	colVector[0]->addData("1");
+
+
+	colVector[1] = new Column("Nume", text, "Unnamed");
+	colVector[1]->addData("Gigel");
+	colVector[1]->addData("Florica");
+	colVector[1]->addData("Ion");
+
+	Column col2("Varsta2", integer, "18");
+	col2.addData("17");
+	col2.addData("19");
+	col2.addData("69");
+	col2.updateData(1, "69");
+
+
+	Table* tab = new Table("test", col);
+	tab->addColumn(*colVector[0]);
+	tab->addColumn(*colVector[1]);
+
+
+
+
+	/*Column** newColumns = new Column * [noOfColumns + 1];
+	for (int i = 0; i < noOfColumns; i++)
+	{
+		newColumns[i] = new Column(*(columns[i]));
+	}
+
+	newColumns[noOfColumns] = new Column(col);
+	noOfColumns++;
+
+	delete[] columns;
+	columns = new Column * [noOfColumns];
+
+	for (int i = 0; i < noOfColumns; i++)
+	{
+		columns[i] = new Column(*(newColumns[i]));
+	}
+	delete[] newColumns;*/
+	Column** test3 = new Column* [2];
+	test3[0] = new Column(*colVector[0]);
+	test3[1] = new Column(col2);
+
+	Column** newTest3 = new Column * [3];
+	for (int i = 0; i < 2; i++)
+	{
+		newTest3[i] = new Column(*test3[i]);
+	}
+	newTest3[2] = new Column(*colVector[1]);
+	delete[] test3;
+	test3 = new Column*[3];
+	for (int i = 0; i < 3; i++)
+	{
+		test3[i] = new Column(*newTest3[i]);
+	}
+	delete[] newTest3;
+
+	cout << test3[0]->name << endl;
+	cout << test3[1]->name << endl;
+	cout << test3[2]->name << endl;
+		 
+
+
+
+
+
+	//tab.addColumns(col);
+	cout << "______________" << endl;
+	tab->printColumns();
+	cout << "______________" << endl;
+
+	delete tab; // the deconstructor doesn't explode fortunately 
+	
 
 	//string input;
 	//getline(cin, input);
