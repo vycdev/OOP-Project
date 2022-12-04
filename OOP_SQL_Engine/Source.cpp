@@ -347,6 +347,152 @@ public:
 	// 
 };
 
+//class Database {
+//private:
+//	Table* tables;
+//	int noOfTables;
+//public:
+//	const string name;
+//
+//	// constructor
+//	Database() :name("")
+//	{
+//		this->tables = nullptr;
+//		this->noOfTables = 0;
+//	}
+//
+//	Database(const string newName) :name(newName)
+//	{
+//		this->tables = nullptr;
+//		this->noOfTables = sizeof(tables);
+//	}
+//
+//	/*Database(const Database& z)
+//	{
+//		this->noOfTables = z.noOfTables;
+//		if (z.tables != nullptr)
+//		{
+//			this->tables = new Table[z.noOfTables];
+//			for (int i; i < z.noOfTables; i++)
+//			{
+//				this->tables[i] = z.tables[i];
+//			}
+//		}
+//	}*/
+//
+//	/*Database operator=(const Database& y)
+//	{
+//		if (this == &y)
+//		{
+//			return *this;
+//		}
+//		if (this->tables != nullptr)
+//		{
+//			delete[] tables;
+//			this->tables = new Table[sizeof(y.tables) + 1];
+//			for (int i = 0; i < sizeof(y.tables); i++)
+//			{
+//				Table.columns = tables.y.colums;
+//				Table.noOfColumns = Table.y.noOfColums;
+//				this->name = y.name;
+//			}
+//		}
+//	}*/
+//
+//	// method for creating a new table
+//	//		- check if that table exists
+//	void CreateTable(Table table, string defaultValue, int noOfRows)
+//	{
+//		this->noOfTables++;
+//		Table* tableCpy;
+//		tableCpy = new Table[noOfTables];
+//		for (int i = 0; i < noOfTables - 1; i++)
+//		{
+//			tableCpy[i] = this->tables[i];
+//		}
+//		tableCpy[this->noOfTables] = table;
+//		delete[] this->tables;
+//		this->tables = new Table[this->noOfTables];
+//		for (int i = 0; i < noOfTables; i++)
+//		{
+//			this->tables[i] = tableCpy[i];
+//		}
+//		delete[] tableCpy;
+//	}
+//
+//	// method for dropping a table
+//	//  
+//	void DeleteTable(Table table)
+//	{
+//		for (int i; i < noOfTables; i++)
+//		{
+//			if (tables[i] == table)
+//			{
+//				delete[] tables[i];
+//			}
+//		}
+//		this->noOfTables--;
+//	}
+//
+//
+//	// method for showing data in table 
+//	//		- takes as parameters a string tableName, a string* columnNames, a string columnName, a string conditionValue
+//	//		- using find the table that satisfies tableName
+//	//		- call the select method for that table
+//	string GetData(string tableName, string* columnNames, string columnName, string conditionValue)
+//	{
+//		for (int i = 0; i < noOfTables; i++)
+//		{
+//			if (tableName == Table.name[i])
+//			{
+//				for (int j = 0; j < Table.noOfColumns; j++)
+//				{
+//					if (columnName == Table.columns[i])
+//					{
+//						return Table.columns[i];
+//					}
+//				}
+//			}
+//		}
+//	}
+//
+//	// method for adding data from a table
+//	//		- takes a string tableName and a string* values
+//	//		- finds that tableName and calls the method for adding values to the table from the table class
+//	void AddData(string tableName, string* values)
+//	{
+//		for (int i = 0; i < noOfTables; i++)
+//		{
+//			//if (tableName == name[i])
+//			{
+//				//insert values
+//			}
+//		}
+//	}
+//
+//
+//	// method for deleting data from a given table given condition
+//	//		- takes a string tableName, a string columnName, a string value
+//	//		- finds the table with tableName
+//	//		- uses the method from the table class on that table to delete the data tha satisfies the condition 
+//	// 
+//	// -- FOR PHASE 2 --
+//	// method for writing to the binary files
+//	// method for reading fromt he binary files (which will be used when the constructor is used at the start of the program)
+//	// 
+//	//
+//	// dealocator
+//	//		- deletes all tables
+//	~Database()
+//	{
+//		if (tables != nullptr)
+//		{
+//			delete[] tables;
+//			this->tables = nullptr;
+//		}
+//	}
+//};
+
 int main()
 { 
 	Column col ("Varsta", integer, "18");
