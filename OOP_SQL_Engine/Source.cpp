@@ -5,18 +5,18 @@
 
 using namespace std;
 
-enum columnTypes { text, integer, floatingPoint };
+enum class columnTypes { text, integer, floatingPoint };
 
 string enumToString(columnTypes t) {
 	switch (t)
 	{
-	case text:
+	case columnTypes::text:
 		return "text";
 		break;
-	case integer:
+	case columnTypes::integer:
 		return "integer";
 		break;
-	case floatingPoint:
+	case columnTypes::floatingPoint:
 		return "float";
 		break;
 	default:
@@ -27,68 +27,68 @@ string enumToString(columnTypes t) {
 
 class Column {
 private:
-	int size; // this would be useful if we used char arrays intead of string arrays for the rows, we'll see 
+	//int size; // this would be useful if we used char arrays intead of string arrays for the rows, we'll see 
 	string* rows; // dynamically allocated
 	int noOfRows; // variable to keep count of the number of rows
+	string defaultValue; // honestly dont know why we need this since it's not used anywhere
+	string name;
+	columnTypes type;
 public:
-	const string defaultValue; // honestly dont know why we need this since it's not used anywhere
-	const string name;
-	const columnTypes type;
 
 	// constructors
-	Column() :name(""), type(text), defaultValue("")
+	Column()
 	{
-		this->size = 0;
-		this->rows = nullptr;
-		this->noOfRows = 0;
+		name = "";
+		type = columnTypes::text;
+		defaultValue = "";
+		rows = nullptr;
+		noOfRows = 0;
 	}
 
-	Column(const string newName, const columnTypes newType, string defaultValue) :name(newName), type(newType), defaultValue(defaultValue)
+	Column(string newName, columnTypes newType, string defaultValue)
 	{
-		this->noOfRows = 0;
-		this->rows = nullptr;
+		name = newName;
+		type = newType;
+		this->defaultValue = defaultValue;
+		noOfRows = 0;
+		rows = nullptr;
 	}	
 	
-	Column(const string newName, const columnTypes newType, string defaultValue, string data) :name(newName), type(newType), defaultValue(defaultValue)
+	Column(string newName, columnTypes newType, string defaultValue, string data)
 	{
-		this->noOfRows = 1;
-		this->rows = new string[noOfRows];
-		this->rows[0] = data;
-	}
-
-	Column(const string newName, const columnTypes newType, string defaultValue, int noOfRows) :name(newName), type(newType), defaultValue(defaultValue)
-	{
-		this->noOfRows = noOfRows;
-		this->rows = new string[noOfRows];
-		for (int i = 0;i < this->noOfRows;i++)
-		{
-			this->rows[i] = this->defaultValue;
-		}
+		name = newName;
+		type = newType;
+		this->defaultValue = defaultValue;
+		noOfRows = 1;
+		rows = new string[noOfRows];
+		rows[0] = data;
 	}
 
 	//copy constructor
-	Column(Column& col) :name(col.name), type(col.type), defaultValue(col.defaultValue)
+	Column(Column& col) 
 	{
+		name = col.getName();
+		type = col.getType();
+		defaultValue = col.getDefaultValue();
 		if (col.getNoOfRows() > 0) {
-			this->noOfRows = col.getNoOfRows();
-			this->rows = new string[noOfRows];
+			noOfRows = col.getNoOfRows();
+			rows = new string[noOfRows];
 			for (int i = 0; i < noOfRows; i++)
 			{
-				this->rows[i] = col[i];
+				rows[i] = col[i];
 			}
 		}
 		else {
-			this->size = 0;
-			this->rows = nullptr;
-			this->noOfRows = 0;
+			rows = nullptr;
+			noOfRows = 0;
 		}
 	}
 
 	void printRows()
 	{
-		for (int i = 0;i < this->noOfRows;i++)
+		for (int i = 0;i < noOfRows;i++)
 		{
-			cout << this->rows[i] << endl;
+			cout << rows[i] << endl;
 			
 		} 
 	}
@@ -104,21 +104,21 @@ public:
 	//		- dealocate the temporary array	
 	void deleteData(int index)
 	{
-		this->noOfRows--;
-		string* newRows = new string[this->noOfRows];
+		noOfRows--;
+		string* newRows = new string[noOfRows];
 		int j = 0;
-		for (int i = 0;i < this->noOfRows+1;i++)
+		for (int i = 0;i < noOfRows+1;i++)
 		{
 			if (i != index)
 			{
-			newRows[j++] = this->rows[i];
+			newRows[j++] = rows[i];
 			}
 		}
-		delete[] this->rows;
-		this->rows = new string[this->noOfRows];
-		for (int i = 0;i < this->noOfRows;i++)
+		delete[] rows;
+		rows = new string[noOfRows];
+		for (int i = 0;i < noOfRows;i++)
 		{
-			this->rows[i] = newRows[i];
+			rows[i] = newRows[i];
 		}
 		delete[] newRows;
 	}
@@ -136,18 +136,18 @@ public:
 	//		- we dealocate the copy of rows
 	void addData(string data)
 	{
-		this->noOfRows++;
-		string* newRows = new string[this->noOfRows];
-		for (int i = 0;i < this->noOfRows-1;i++)
+		noOfRows++;
+		string* newRows = new string[noOfRows];
+		for (int i = 0;i < noOfRows-1;i++)
 		{
-			newRows[i] = this->rows[i];
+			newRows[i] = rows[i];
 		}
-		newRows[this->noOfRows - 1] = data;
-		delete[] this->rows;
-		this->rows = new string[this->noOfRows];
-		for (int i = 0;i < this->noOfRows;i++)
+		newRows[noOfRows - 1] = data;
+		delete[] rows;
+		rows = new string[noOfRows];
+		for (int i = 0;i < noOfRows;i++)
 		{
-			this->rows[i] = newRows[i];
+			rows[i] = newRows[i];
 		}
 		delete[] newRows;
 	}
@@ -157,7 +157,7 @@ public:
 	//		- updates rows[index] = value
 	void updateData(int index, string data)
 	{
-		this->rows[index] = data;
+		rows[index] = data;
 	}
 
 
@@ -171,10 +171,10 @@ public:
 	//		- 1 means that the parameter value is equal to the value of the row at that index, row[i] == value
 	bool* getInstances(string value, bool matchAll = false)
 	{
-		bool* duplicates = new bool[this->noOfRows];
-		for (int i = 0;i < this->noOfRows;i++)
+		bool* duplicates = new bool[noOfRows];
+		for (int i = 0;i < noOfRows;i++)
 		{
-			if (this->rows[i] == value || matchAll)
+			if (rows[i] == value || matchAll)
 			{
 				duplicates[i] = 1;
 			}
@@ -186,6 +186,15 @@ public:
 		return duplicates;
 	}
 
+	string getDefaultValue() {
+		return defaultValue;
+	}
+	string getName() {
+		return name;
+	}
+	columnTypes getType() {
+		return type;
+	}
 
 	// method for getting data at index
 	//		- takes an index
@@ -200,18 +209,21 @@ public:
 
 	Column& operator=(Column& col)
 	{
+		name = col.getName();
+		type = col.getType();
+		defaultValue = col.getDefaultValue();
+
 		if (col.getNoOfRows() > 0) {
-			this->noOfRows = col.getNoOfRows();
-			this->rows = new string[noOfRows];
+			noOfRows = col.getNoOfRows();
+			rows = new string[noOfRows];
 			for (int i = 0; i < noOfRows; i++)
 			{
-				this->rows[i] = col[i];
+				rows[i] = col[i];
 			}
 		}
 		else {
-			this->size = 0;
-			this->rows = nullptr;
-			this->noOfRows = 0;
+			rows = nullptr;
+			noOfRows = 0;
 		}
 		return *this;
 	}
@@ -221,7 +233,7 @@ public:
 	//		- simply returns the noOfRows
 	int getNoOfRows()
 	{
-		return this->noOfRows;
+		return noOfRows;
 	}
 
 
@@ -229,9 +241,9 @@ public:
 	//		- dealocates rows
 	~Column()
 	{
-		if (this->rows != nullptr)
+		if (rows != nullptr)
 		{
-			delete[] this->rows;
+			delete[] rows;
 		}
 	}
 	friend ostream& operator<<(ostream& os, Column col);
@@ -240,7 +252,7 @@ public:
 ostream& operator<<(ostream& os, Column col)
 {
 
-	os << col.name << ":" << enumToString(col.type) << endl;
+	os << col.getName() << ":" << enumToString(col.getType()) << endl;
 	for (int i = 0; i < col.getNoOfRows(); i++)
 	{
 		os << col[i] << endl;
@@ -250,23 +262,25 @@ ostream& operator<<(ostream& os, Column col)
 
 class Table {
 private: 
-	Column** columns; // dynamically allocated
+	Column* columns; // dynamically allocated
 	int noOfColumns; // number to keep count of the number of columns in the database
-	const string name;
+	string name;
 public: 
 
 	// constructors
-	Table():name("")
+	Table()
 	{
-		this->columns = nullptr;
+		name = "";
+		columns = nullptr;
 		noOfColumns = 0;
 	}
 
-	Table(const string name, Column column) : name(name) // initialise the table with 1 column
+	Table(const string name, Column column)// initialise the table with 1 column
 	{
+		this->name = name;
 		this->noOfColumns = 1;
-		this->columns = new Column*[1];
-		this->columns[0] = new Column(column); // U gotta assign it like this since its dynamically allocated and stuff 
+		this->columns = new Column[1];
+		this->columns[0] = column; // U gotta assign it like this since its dynamically allocated and stuff 
 	}
 	
 
@@ -278,7 +292,7 @@ public:
 	{
 		for (int i = 0; i < noOfColumns; i++)
 		{
-			cout << *columns[i] << endl;
+			cout << columns[i] << endl;
 		}
 	}
 
@@ -287,21 +301,22 @@ public:
 	//		- basically the same as the adding data method in the column class
 	void addColumn(Column& col)
 	{
-		Column** newColumns = new Column*[noOfColumns + 1];
-		for (int i = 0; i < noOfColumns; i++)
-		{
-			newColumns[i] = new Column(*columns[i]);
-		}
-
-		newColumns[noOfColumns] = new Column(col);
 		noOfColumns++;
+		Column* newColumns = new Column[noOfColumns];
 
+		for (int i = 0; i < noOfColumns-1; i++)
+		{
+			newColumns[i] = columns[i];
+		}
+		newColumns[noOfColumns-1] = col;
+		
 		delete[] columns;
-		columns = new Column*[noOfColumns];
+
+		columns = new Column[noOfColumns];
 
 		for (int i = 0; i < noOfColumns; i++)
 		{
-			columns[i] = new Column(*newColumns[i]);
+			columns[i] = newColumns[i];
 		}
 		delete[] newColumns;
 	}
@@ -311,35 +326,31 @@ public:
 //		- if it finds the column it dealocates it
 //		- you will need to do kinda the same thing as the deleting data at index method from the column class except here you search for the index yourself given the column name 
 
-	/*void dropColumns(int index)
+	void dropColumn(int index)
 	{
-		this->noOfColumns--;
-		Column* newColumns = new Column[this->noOfColumns];
+		noOfColumns--;
+		Column* newColumns = new Column[noOfColumns];
 		int j = 0;
-		for (int i = 0; i < this->noOfColumns + 1; i++)
+
+		for (int i = 0; i < noOfColumns + 1; i++)
 		{
 			if (i != index)
 			{
-				newColumns[j++] = this->columns[i];
+				newColumns[j] = columns[i];
+				j++;
 			}
 		}
-		delete[] this->columns;
-		this->columns = new Column[this->noOfColumns];
-		for (int i = 0; i < this->noOfColumns; i++)
+
+		delete[] columns;
+		columns = new Column[noOfColumns];
+		
+		for (int i = 0; i < noOfColumns; i++)
 		{
-			this->columns[i] = newColumns[i];
+			columns[i] = newColumns[i];
 		}
 		delete[] newColumns;
-	}*/
-
-// dealocator
-//		- deletes all columns
-	~Table()
-	{
-		if (columns != nullptr) {
-			delete[] columns;
-		}
 	}
+
 	
 	// method for dropping index (still cant tell what indexes are in sql we we're going to put this off temporarily at least)
 	// method for adding index 
@@ -353,6 +364,15 @@ public:
 	//		- this can be done by checkng the type of the column with the converted type of the given value in the parameter
 	//		- i honestly dont know how this can be properly done but i think this check can be something to worry about later 
 	//		- (might have to use void vectors instead of string vectors in the column class for the rows)
+	void addData(string* data, int length) {
+		if (length != noOfColumns) return;
+		
+		for (int i = 0; i < noOfColumns; i++)
+		{
+			columns[i].addData(data[i]);
+		}
+	}
+
 	//		
 	// method for deleting data at index 
 	//		- takes an index	
@@ -361,23 +381,76 @@ public:
 	//		- idk something like that	
 	//		- could be private since this will be used with the next method only
 	// 
+	void deteleDataAtIndex(int index) {
+		for (int i = 0; i < noOfColumns; i++)
+		{
+			columns[i].deleteData(index);
+		}
+	}
 	// method for deleting data given a column name and a value
 	//		- find the column with the given name
 	//		- use the "method for getting indexes of data given a value" from the column class to get the index that need to be deleted 
 	//		- use the method for the deleting data at index from this class (the table class not the column class) using the indexes that you got 
 	//		- something like if(indexes[i] == 1) this->deleteRowAtIndex(i) or something similar
-	// 
-	// method for update at index given a value and a column name
-	//		- find the column with the given column name
-	//		- use the update at index method from the column class on that column with the index and value
-	//		- ---(also here if you want to torture yourself you can check the type of value) ---
-	//	
+	void deleteData(string name, string value) {
+		Column targetColumn;
+		for (int i = 0; i < noOfColumns; i++)
+		{
+			if (columns[i].getName() == name) {
+				targetColumn = columns[i];
+			}
+		}
+
+		bool* indexes = targetColumn.getInstances(value);
+		for (int i = 0; i < targetColumn.getNoOfRows(); i++)
+		{
+			if (indexes[i]) {
+				deteleDataAtIndex(i);
+			}
+		}
+		delete[] indexes;
+	}
+
 	// method for updating data given a column name and a value and a new value for the rows that meet the condition 
 	//		- find the column with the given name
 	//		- use the "method for getting indexes of data given a value" from the column class to get the indexes that need to be updated
 	//		- use the method for the updating data at index from this class (the table class not the column class) using the indexes that you got 
 	//		- sommething like if(indexes[i] == 1) this->updateRowAtIndex(rowName, i, value) or something similar 
-	// 
+
+	void updateData(string name, string value, string data) {
+		int targetColumnIndex;
+		for (int i = 0; i < noOfColumns; i++)
+		{
+			if (columns[i].getName() == name) {
+				targetColumnIndex = i;
+			}
+		}
+
+		bool* indexes = columns[targetColumnIndex].getInstances(value);
+		for (int i = 0; i < columns[targetColumnIndex].getNoOfRows(); i++)
+		{
+			if (indexes[i]) {
+				columns[targetColumnIndex].updateData(i, data);
+			}
+		}
+		delete[] indexes;
+	}
+	string getName() {
+		return name;
+	}
+	int getNoOfColumns() {
+		return noOfColumns;
+	} 
+
+	// dealocator
+	//		- deletes all columns
+	~Table()
+	{
+		if (columns != nullptr) {
+			delete[] columns;
+		}
+	}
+
 };
 
 //class Database {
@@ -528,7 +601,7 @@ public:
 
 int main()
 { 
-	Column col ("Varsta", integer, "18");
+	Column col ("Varsta", columnTypes::integer, "18");
 	col.addData("17");
 	col.addData("19");
 	col.addData("69");
@@ -538,83 +611,41 @@ int main()
 
 	//col.printRows();
 
-	Column** colVector = new Column*[2];
+	Column* colVector = new Column[2];
 
-	colVector[0] = new Column("Id", integer, "0");
-	colVector[0]->addData("2");
-	colVector[0]->addData("0");
-	colVector[0]->addData("1");
+	Column aux("Id", columnTypes::integer, "0");
+	colVector[0] = aux;
+	colVector[0].addData("2");
+	colVector[0].addData("0");
+	colVector[0].addData("1");
 
-
-	colVector[1] = new Column("Nume", text, "Unnamed");
-	colVector[1]->addData("Gigel");
-	colVector[1]->addData("Florica");
-	colVector[1]->addData("Ion");
-
-	Column col2("Varsta2", integer, "18");
-	col2.addData("17");
-	col2.addData("19");
-	col2.addData("69");
-	col2.updateData(1, "69");
-
+	Column aux2("Nume", columnTypes::text, "Unnamed");
+	colVector[1] = aux2;
+	colVector[1].addData("Gigel");
+	colVector[1].addData("Florica");
+	colVector[1].addData("Ion");
 
 	Table* tab = new Table("test", col);
-	tab->addColumn(*colVector[0]);
-	tab->addColumn(*colVector[1]);
+	tab->addColumn(colVector[0]);
+	tab->addColumn(colVector[1]);
+	tab->dropColumn(0);
+	tab->addColumn(col);
 
+	tab->deteleDataAtIndex(0);
+	tab->deleteData("Nume", "Ion");
 
+	string dataValues[3] = { "10", "Costel", "40" };
+	tab->addData(dataValues, 3);
+	tab->addData(dataValues, 3);
+	tab->addData(dataValues, 3);
 
+	tab->updateData("Nume", "Costel", "Nea Nicu");
 
-	/*Column** newColumns = new Column * [noOfColumns + 1];
-	for (int i = 0; i < noOfColumns; i++)
-	{
-		newColumns[i] = new Column(*(columns[i]));
-	}
-
-	newColumns[noOfColumns] = new Column(col);
-	noOfColumns++;
-
-	delete[] columns;
-	columns = new Column * [noOfColumns];
-
-	for (int i = 0; i < noOfColumns; i++)
-	{
-		columns[i] = new Column(*(newColumns[i]));
-	}
-	delete[] newColumns;*/
-	Column** test3 = new Column* [2];
-	test3[0] = new Column(*colVector[0]);
-	test3[1] = new Column(col2);
-
-	Column** newTest3 = new Column * [3];
-	for (int i = 0; i < 2; i++)
-	{
-		newTest3[i] = new Column(*test3[i]);
-	}
-	newTest3[2] = new Column(*colVector[1]);
-	delete[] test3;
-	test3 = new Column*[3];
-	for (int i = 0; i < 3; i++)
-	{
-		test3[i] = new Column(*newTest3[i]);
-	}
-	delete[] newTest3;
-
-	cout << test3[0]->name << endl;
-	cout << test3[1]->name << endl;
-	cout << test3[2]->name << endl;
-		 
-
-
-
-
-
-	//tab.addColumns(col);
 	cout << "______________" << endl;
 	tab->printColumns();
 	cout << "______________" << endl;
 
-	delete tab; // the deconstructor doesn't explode fortunately 
+	//delete tab; // the deconstructor doesn't explode fortunately 
 	
 
 	//string input;
