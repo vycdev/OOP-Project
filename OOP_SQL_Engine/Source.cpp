@@ -3,6 +3,8 @@
 
 #include "./parsing.h"
 
+#include "database.h"
+
 using namespace std;
 
 
