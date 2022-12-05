@@ -260,7 +260,26 @@ void lexer(string* tokens, int noOfTokens, int line) {
 		// check 4th token
 		checkToken(tokens[3], "VALUES", line);
 
+		// check the last token which has the input for the table
+			// parse the tokens
+		int noOfInputValues = 0;
+		string* inputValues = new string[100]; // assuming no more than 100 columns
+		tokenizer(tokens[5], ",", noOfInputValues, inputValues);
+		
+			// check the paranthesis 
+	/*	if (tokens[5].length() >= 2) {
+			int lastPos = inputValues[noOfInputValues - 1].length() - 1;
+			if (!(tableColumns[noOfColumns - 1][lastPos] == ')' && tableColumns[noOfColumns - 1][lastPos - 1])) {
+				string err = "Error: Invalid table formatting at line " + to_string(line) + ". Expected \"))\" but instead got \"" + tableColumns[noOfColumns - 1][lastPos] + tableColumns[noOfColumns - 1][lastPos - 1] + "\".";
+				throw err;
+			}
+		} */
 
+			// check the number of tokens
+
+			// check the validity of the tokens according to their respective columns in the database
+
+			// do the insertion
 
 		return;
 	}
