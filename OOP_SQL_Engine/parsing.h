@@ -5,6 +5,26 @@
 
 using namespace std;
 
+enum class columnTypes { text, integer, floatingPoint };
+
+string enumToString(columnTypes t) {
+	switch (t)
+	{
+	case columnTypes::text:
+		return "text";
+		break;
+	case columnTypes::integer:
+		return "integer";
+		break;
+	case columnTypes::floatingPoint:
+		return "float";
+		break;
+	default:
+		return "unknown";
+		break;
+	}
+}
+
 bool hasCharsInString(string str, const char* chr) {
 	bool ok = true;
 	for (int i = 0; i < strlen(chr); i++)
