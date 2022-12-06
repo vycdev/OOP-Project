@@ -66,5 +66,12 @@ int main()
 	//-c ASDFASDF
 
 	//./program.exe -c COMANDA
+
+
+	// !!!!!!!!!!! THERE MIGHT BE A PROBLEM WITH VISUAL STUDIO, IT MIGHT NOT HAVE OPENED IN THE SOLUTION EXPLORER THE FOLLOWING FILES: column.h database.h and tableh. !!!!!!!!!!!!!!!!!
+	// !!!!!!!!!!! THERE MIGHT BE A PROBLEM WITH VISUAL STUDIO, IT MIGHT NOT HAVE OPENED IN THE SOLUTION EXPLORER THE FOLLOWING FILES: column.h database.h and tableh. !!!!!!!!!!!!!!!!!
+	// !!!!!!!!!!! THERE MIGHT BE A PROBLEM WITH VISUAL STUDIO, IT MIGHT NOT HAVE OPENED IN THE SOLUTION EXPLORER THE FOLLOWING FILES: column.h database.h and tableh. !!!!!!!!!!!!!!!!!
+	// !!!!!!!!!!! THERE MIGHT BE A PROBLEM WITH VISUAL STUDIO, IT MIGHT NOT HAVE OPENED IN THE SOLUTION EXPLORER THE FOLLOWING FILES: column.h database.h and tableh. !!!!!!!!!!!!!!!!!
+	// !!!!!!!!!!! THERE MIGHT BE A PROBLEM WITH VISUAL STUDIO, IT MIGHT NOT HAVE OPENED IN THE SOLUTION EXPLORER THE FOLLOWING FILES: column.h database.h and tableh. !!!!!!!!!!!!!!!!!
 	return 0;
 }
