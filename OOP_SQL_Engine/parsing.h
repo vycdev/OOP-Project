@@ -297,8 +297,8 @@ void lexer(string* tokens, int noOfTokens, int line) {
 
 			// check the number of tokens
 		// Call the db methods to find the number of columns in the table with the name tokens[2]
-		checkNoOfTokensMin(noOfInputValues, ..., line);
-		checkNoOfTokensMax(noOfInputValues, ..., line);
+		checkNoOfTokensMin(noOfInputValues, 1, line);
+		checkNoOfTokensMax(noOfInputValues, 1, line);
 
 			// check the validity of the tokens according to their respective columns in the database
 
