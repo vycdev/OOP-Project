@@ -92,9 +92,26 @@ public:
 	//		- takes as parameters a string tableName, a string* columnNames, a string columnName, a string conditionValue
 	//		- using find the table that satisfies tableName
 	//		- call the select method for that table
-	string GetData(string tableName, string* columnNames, string columnName, string conditionValue)
+	void GetData(string tableName, string* columnNames, int noColumns, string columnName, string conditionValue)
 	{
+		for (int i = 0; i < this->noOfTables; i++)
+		{
+			if (tableName == tables[i].getName())
+			{
+				cout << "Name:" << tableName;
+				for (int j = 0; j < tables[i].getNoOfColumns(); j++)
+				{
+					for (int k = 0; k < noColumns; k++)
+					{
+						if (columnNames[k] == tables[i].getAllColumnsNames()[j])
+						{
+							cout << tables[i].getAllColumns()[j];
+						}
 
+					}
+				}
+			}
+		}
 	}
 
 	// method for adding data to a table

@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <fstream>
 
 #include "./parsing.h"
 
@@ -10,6 +11,8 @@ using namespace std;
 
 int main()
 { 
+	ofstream Output("filename.txt");
+
 	Column col ("Varsta", columnTypes::integer, "18");
 	col.addData("17");
 	col.addData("19");
@@ -49,10 +52,16 @@ int main()
 	tab->addData(dataValues, 3);
 
 	tab->updateData("Nume", "Costel", "Nea Nicu");
-
-	cout << "______________" << endl;
+		
+	//Database* db = new Database();
+	
+	Output << "______________" << endl;
 	tab->printColumns();
-	cout << "______________" << endl;
+	//db->CreateTable(*tab);
+	//string vectorString[2];
+	//vectorString[0] = "Nume";
+	//db->GetData("test", vectorString, 1, "a", "b");
+	Output << "______________" << endl;
 
 	delete tab; // the deconstructor doesn't explode fortunately 
 	

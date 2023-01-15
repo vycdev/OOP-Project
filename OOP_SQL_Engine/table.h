@@ -42,6 +42,28 @@ public:
 		}
 	}
 
+	string* getAllColumnsNames()
+	{
+		string* getColumnsNames = new string[noOfColumns];
+		for (int i = 0; i < noOfColumns; i++)
+		{
+			getColumnsNames[i] = columns[i].getName();
+		}
+
+		return getColumnsNames;
+	}
+
+	Column* getAllColumns()
+	{
+		Column* getColumns = new Column[noOfColumns];
+		for (int i = 0; i < noOfColumns; i++)
+		{
+			getColumns[i] = columns[i];
+		}
+
+		return getColumns;
+	}
+
 	// method for adding columns 
 	//		- takes a column name, a type, a size, and a default value
 	//		- basically the same as the adding data method in the column class
